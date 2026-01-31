@@ -1,0 +1,36 @@
+# Progress Log
+
+## 2026-01-31: Context Builder Implementation
+
+### Completed
+- Created `src/core/context-builder.ts` with full context building functionality
+- Implemented template loading from prompts directory (master, hourly, journal, activity, day1-first-wake)
+- Integrated Supermemory SDK for memory retrieval (search, recent updates, strategy context, learnings)
+- Implemented template variable substitution with support for all required variables:
+  - {{DAY}}, {{HOUR}}, {{DAYS_REMAINING}}, {{RUNWAY_DAYS}}
+  - {{THINGS_SHIPPED}}, {{REVENUE}}
+  - {{CURRENT_STRATEGY}}, {{RECENT_MEMORIES}}, {{URGENCY_LEVEL}}
+  - Additional context-specific variables
+- Exported all required functions:
+  - buildHourlyContext(activityLog) - builds context for hourly updates
+  - buildJournalContext() - builds context for daily journal entries
+  - buildActivityContext(goals) - builds context for activity decisions
+  - buildFirstWakeContext() - builds context for Day 1, Hour 0 first wake
+- Added helper functions:
+  - loadPromptTemplate() - loads .md templates from prompts/
+  - calculateUrgencyLevel() - determines urgency based on runway days
+  - getRunwayStatus() - placeholder for runway tracking integration
+  - searchMemories() - searches Supermemory for relevant content
+  - getRecentHourlyUpdates() - retrieves recent hourly update memories
+  - getCurrentStrategyContext() - retrieves current strategy from memory
+  - getRelevantLearnings() - retrieves learnings based on context
+  - substituteTemplateVariables() - replaces {{VAR}} placeholders
+- Created comprehensive tests in `src/core/__tests__/context-builder.test.ts`
+- All 48 tests passing
+- Linting passes with biome
+
+### Technical Notes
+- Uses Supermemory SDK for memory search (client.search.execute)
+- Template substitution handles all defined variables, leaves unknown placeholders untouched
+- Runway status is currently a placeholder - will need integration with actual runway tracking
+- Supermemory client is a singleton with reset function for testing
