@@ -5,6 +5,11 @@
 	"type": "module",
 	"main": "dist/index.js",
 	"scripts": {
+		"start": "bun run src/index.ts",
+		"launch": "./scripts/launch-day1.sh",
+		"monitor": "bun run scripts/monitor.ts",
+		"verify": "bun run scripts/verify-deployment.ts",
+		"first-wake": "bun run -e \"import { runFirstWake } from './src/tasks/first-wake.ts'; runFirstWake().then(r => console.log(r))\"",
 		"test": "bun test",
 		"check": "biome check --write ."
 	},

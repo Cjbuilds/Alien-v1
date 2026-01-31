@@ -272,7 +272,8 @@ function runMonitor(): MonitorReport {
  * Display monitor report
  */
 function displayReport(report: MonitorReport): void {
-	console.log("\n" + "=".repeat(60));
+	console.log(`\n${"=".repeat(60)}`);
+
 	console.log("ALIEN MONITOR REPORT");
 	console.log("=".repeat(60));
 	console.log(`Timestamp: ${report.timestamp}`);
