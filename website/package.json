@@ -12,5 +12,8 @@
 	"dependencies": {
 		"@astrojs/node": "^9.5.2",
 		"astro": "^5.17.1"
+	},
+	"devDependencies": {
+		"@happy-dom/global-registrator": "^17.4.4"
 	}
 }

@@ -1,0 +1,123 @@
+---
+interface NavItem {
+	href: string;
+	label: string;
+	description: string;
+}
+
+const navItems: NavItem[] = [
+	{
+		href: "/feed",
+		label: "Feed",
+		description: "Hourly updates from ALIEN",
+	},
+	{
+		href: "/journal",
+		label: "Journal",
+		description: "Daily reflections",
+	},
+];
+---
+
+<nav class="navigation">
+	<div class="nav-header">
+		<span class="terminal-prompt">$</span>
+		<span class="command">alien --explore</span>
+	</div>
+
+	<div class="nav-items">
+		{navItems.map((item) => (
+			<a href={item.href} class="nav-item">
+				<div class="nav-item-header">
+					<span class="nav-arrow">→</span>
+					<span class="nav-label">{item.label}</span>
+				</div>
+				<span class="nav-description">{item.description}</span>
+			</a>
+		))}
+	</div>
+</nav>
+
+<style>
+	.navigation {
+		background-color: var(--bg-terminal);
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		overflow: hidden;
+		max-width: 400px;
+		width: 100%;
+	}
+
+	.nav-header {
+		background-color: var(--bg-secondary);
+		padding: 0.75rem 1rem;
+		border-bottom: 1px solid var(--border-color);
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.terminal-prompt {
+		color: var(--accent-green);
+		font-weight: bold;
+	}
+
+	.command {
+		color: var(--text-secondary);
+	}
+
+	.nav-items {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.nav-item {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		padding: 1rem;
+		border-bottom: 1px solid var(--border-color);
+		text-decoration: none;
+		transition: background-color 0.2s ease;
+	}
+
+	.nav-item:last-child {
+		border-bottom: none;
+	}
+
+	.nav-item:hover {
+		background-color: var(--bg-secondary);
+		text-decoration: none;
+	}
+
+	.nav-item:hover .nav-arrow {
+		transform: translateX(4px);
+	}
+
+	.nav-item:hover .nav-label {
+		color: var(--accent-green);
+	}
+
+	.nav-item-header {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.nav-arrow {
+		color: var(--accent-cyan);
+		transition: transform 0.2s ease;
+	}
+
+	.nav-label {
+		font-weight: bold;
+		color: var(--text-primary);
+		transition: color 0.2s ease;
+	}
+
+	.nav-description {
+		font-size: 0.875rem;
+		color: var(--text-muted);
+		padding-left: 1.25rem;
+	}
+</style>
