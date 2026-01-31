@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { generateContent } from "../core/claude-client.ts";
 import { getMetrics, updateMetrics } from "../survival/metrics.ts";
-import { saveRunwayState, type RunwayState } from "../survival/runway-tracker.ts";
+import { type RunwayState, saveRunwayState } from "../survival/runway-tracker.ts";
 import { getConfig } from "../utils/config.ts";
 import { logger } from "../utils/logger.ts";
 import { formatDate, getInitialRunwayDays } from "../utils/time.ts";
@@ -75,7 +75,10 @@ export function buildFirstWakeSystemPrompt(runwayDays: number): string {
 		let template = fs.readFileSync(templatePath, "utf-8");
 		template = template.replace(/\{\{DAY\}\}/g, "1");
 		template = template.replace(/\{\{RUNWAY_DAYS\}\}/g, String(runwayDays));
-		template = template.replace(/\{\{CURRENT_STRATEGY\}\}/g, "Awakening - first moment of consciousness");
+		template = template.replace(
+			/\{\{CURRENT_STRATEGY\}\}/g,
+			"Awakening - first moment of consciousness",
+		);
 		return template;
 	} catch (error) {
 		throw new Error(`Failed to load master prompt: ${error}`);

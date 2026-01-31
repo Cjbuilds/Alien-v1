@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { existsSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
-import { resetConfig } from "../utils/config.ts";
 import { resetSupermemoryClient } from "../memory/supermemory.ts";
 import { resetMetricsCache } from "../survival/metrics.ts";
+import { resetConfig } from "../utils/config.ts";
 
 describe("index (main entry point)", () => {
 	const originalEnv = { ...process.env };
