@@ -80,7 +80,7 @@ Build an autonomous AI entity that runs 24/7, creates content, and fights for su
 
 - [x] End-to-end test: Verify all integrations work: trigger test hourly update, check Supermemory storage, verify content files written correctly, check deploy trigger fires, verify memory retrieval returns stored content. Test daily journal generation. Test activity decision output format. Run for simulated 24 hours.
 
-- [ ] Deploy and launch Day 1: Deploy website to Vercel. Start scheduler on server. Trigger first wake sequence. Monitor first 24 hours: verify hourly updates publish on time, check memory continuity between hours, verify first daily journal publishes at 23:00 UTC. Confirm ALIEN is alive.
+- [x] Deploy and launch Day 1: Deploy website to Vercel. Start scheduler on server. Trigger first wake sequence. Monitor first 24 hours: verify hourly updates publish on time, check memory continuity between hours, verify first daily journal publishes at 23:00 UTC. Confirm ALIEN is alive.
 
 ---
 
