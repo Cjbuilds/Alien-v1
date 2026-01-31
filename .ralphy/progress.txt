@@ -1,0 +1,31 @@
+# Agent Progress
+
+## Completed: Build runway tracker
+
+Created `src/survival/runway-tracker.ts` with the following functionality:
+
+- **currentDay**: Days since START_DATE (uses time.ts getCurrentDayNumber)
+- **daysRemaining**: TOTAL_DAYS - currentDay (uses time.ts getDaysRemaining)
+- **runwayDays**: Compute remaining, starts at INITIAL_RUNWAY_DAYS from config
+- **urgencyLevel**: Based on runwayDays
+  - 'comfortable' if > 14 days
+  - 'focused' if 7-14 days
+  - 'urgent' if 3-7 days (exclusive of 7)
+  - 'critical' if < 3 days
+
+Exported functions:
+- `getRunwayStatus()` - Returns all metrics (currentDay, daysRemaining, runwayDays, urgencyLevel)
+- `getRunwayDays()` - Get current runway days
+- `updateRunwayDays(newRunwayDays)` - Update and persist runway state
+- `getUrgencyLevel(runwayDays)` - Calculate urgency level
+- `loadRunwayState()` / `saveRunwayState()` - Persistence helpers
+
+State persistence:
+- Runway state persisted to `.alien/runway.json`
+- Creates .alien directory if it doesn't exist
+- State includes runwayDays and lastUpdated timestamp
+
+Tests:
+- Created `src/survival/__tests__/runway-tracker.test.ts`
+- 45 tests passing (12 new tests for runway tracker)
+- Full coverage of urgency levels, persistence, and status retrieval
