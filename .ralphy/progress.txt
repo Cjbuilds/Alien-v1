@@ -1,0 +1,25 @@
+# Progress Log
+
+## 2026-01-31
+
+### Completed: Build website content writer
+
+Created `src/website/content-writer.ts` with the following functions:
+
+1. **writeHourlyUpdate(day, hour, content, metadata)** - Saves hourly updates to `website/content/hourly/day{DAY}_hour{HOUR}.json` with format:
+   - day, hour, timestamp, content, runway_days, urgency, current_strategy, wordCount
+
+2. **writeDailyJournal(day, content, metadata)** - Saves daily journals to `website/content/journals/day{DAY}.json` with format:
+   - day, timestamp, content, runway_days, urgency, current_strategy, things_shipped, revenue_total, wordCount
+
+3. **updateLanding(currentDay, daysRemaining, runwayDays, thingsShipped, revenueTotal, currentStrategy)** - Saves landing page data to `website/content/landing.json` with format:
+   - currentDay, daysRemaining, runwayDays, thingsShipped, revenueTotal, currentStrategy, lastUpdated
+
+Key features:
+- Atomic writes using temp files to prevent data loss
+- Auto-creates directories as needed
+- Word count calculation for content
+- ISO timestamps for all entries
+- Full TypeScript types exported
+
+Tests: 43 tests passing across 4 files.
