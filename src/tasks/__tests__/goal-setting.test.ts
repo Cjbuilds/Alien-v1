@@ -1,13 +1,8 @@
 import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
-import { existsSync, rmSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { resetConfig } from "../../utils/config.ts";
-import {
-	getCurrentGoals,
-	resetGoalsCache,
-	type Goal,
-	type GoalsStore,
-} from "../goal-setting.ts";
+import { type Goal, type GoalsStore, getCurrentGoals, resetGoalsCache } from "../goal-setting.ts";
 
 describe("goal-setting", () => {
 	const originalEnv = { ...process.env };

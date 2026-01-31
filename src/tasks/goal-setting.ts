@@ -1,6 +1,6 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import Anthropic from "@anthropic-ai/sdk";
 import { getConfig } from "../utils/config.ts";
 import { logger } from "../utils/logger.ts";
 import { getCurrentDayNumber, getDaysRemaining, getTimeStatus } from "../utils/time.ts";
@@ -169,7 +169,9 @@ function parseGoalsFromResponse(response: string, type: GoalType): Goal[] {
 			}
 			currentGoal = { content: goalMatch[1].trim() };
 		}
-		const measurableMatch = trimmed.match(/^\s*[-*]?\s*\*?\*?(?:Measurable|Metric|Success):?\*?\*?\s*(.+)/i);
+		const measurableMatch = trimmed.match(
+			/^\s*[-*]?\s*\*?\*?(?:Measurable|Metric|Success):?\*?\*?\s*(.+)/i,
+		);
 		if (measurableMatch && currentGoal) {
 			currentGoal.measurable = measurableMatch[1].trim();
 		}
@@ -310,7 +312,14 @@ Previous weekly goals for context:
 ${store.weeklyGoals.length > 0 ? store.weeklyGoals.map((g) => `- ${g.content} (${g.completed ? "completed" : "in progress"})`).join("\n") : "None set yet"}
 
 Recent daily goals:
-${store.dailyGoals.length > 0 ? store.dailyGoals.slice(0, 5).map((g) => `- ${g.content}`).join("\n") : "None set yet"}
+${
+	store.dailyGoals.length > 0
+		? store.dailyGoals
+				.slice(0, 5)
+				.map((g) => `- ${g.content}`)
+				.join("\n")
+		: "None set yet"
+}
 
 Focus on strategic objectives that build toward financial sustainability within the 100-day timeline.`;
 
