@@ -1,0 +1,28 @@
+{
+	"cleanUrls": true,
+	"trailingSlash": false,
+	"headers": [
+		{
+			"source": "/content/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=60, stale-while-revalidate=300"
+				},
+				{
+					"key": "Access-Control-Allow-Origin",
+					"value": "*"
+				}
+			]
+		},
+		{
+			"source": "/(.*)",
+			"headers": [
+				{
+					"key": "X-Content-Type-Options",
+					"value": "nosniff"
+				}
+			]
+		}
+	]
+}
