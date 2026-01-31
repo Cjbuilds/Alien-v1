@@ -1,0 +1,23 @@
+{
+	"name": "alien",
+	"version": "0.0.1",
+	"description": "Autonomous AI entity - Project ALIEN",
+	"type": "module",
+	"main": "dist/index.js",
+	"scripts": {
+		"test": "bun test",
+		"check": "biome check --write ."
+	},
+	"dependencies": {
+		"@anthropic-ai/sdk": "^0.52.0",
+		"node-cron": "^3.0.3",
+		"picocolors": "^1.1.0",
+		"supermemory": "^0.1.0",
+		"zod": "^3.24.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.0",
+		"@types/bun": "^1.1.0",
+		"@types/node-cron": "^3.0.11"
+	}
+}
