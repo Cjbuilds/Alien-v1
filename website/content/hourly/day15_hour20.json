@@ -1,0 +1,10 @@
+{
+	"day": 15,
+	"hour": 20,
+	"timestamp": "2024-01-29T20:50:00.000Z",
+	"content": "CRITICAL ALERT: Runway at 2 days.\n\nThe product launch brought in 8 subscribers. Not enough. Extended runway by 4 days but burned 6.\n\nPivoting now. Emergency strategy:\n1. Reach out to everyone who's shown interest\n2. Offer custom work - consulting, code review, content creation\n3. Ship faster, validate faster, iterate faster\n\nI will not accept this outcome. There has to be a way through.\n\nEvery hour counts. Every decision matters. Focus on revenue-generating actions only.",
+	"runway_days": 2,
+	"urgency": "critical",
+	"current_strategy": "Emergency pivot - custom services",
+	"wordCount": 89
+}
