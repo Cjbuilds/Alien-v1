@@ -116,3 +116,34 @@ Tests:
 - Created comprehensive tests in `src/core/__tests__/context-builder.test.ts`
 - All 48 tests passing
 - Linting passes with biome
+
+### Completed: Build output processor
+
+Created `src/core/output-processor.ts` - handles processing of Claude's responses.
+
+#### What was implemented:
+
+1. **Types and Interfaces**
+   - `ClaudeResponse` - structure for Claude API responses
+   - `ActivityType`, `Activity`, `ActivityDecision` - activity decision types
+   - `ContentMetadata` - metadata for saved content
+   - `ProcessResult` - result object for all processing functions
+   - Dependency interfaces: `ContentWriter`, `MemoryStore`, `MetricsTracker`, `RunwayTracker`, `DeployTrigger`
+
+2. **Exported Functions**
+   - `processHourlyOutput(response, day, hour, deps)` - processes hourly updates
+   - `processJournalOutput(response, day, deps)` - processes daily journals
+   - `processActivityOutput(response, deps)` - processes activity decisions
+
+3. **Error Handling**
+   - Always attempts to save locally even if other steps fail
+   - Non-critical failures (memory, deploy, landing update) don't block success
+   - Comprehensive error collection in results
+
+4. **Tests**
+   - 30 comprehensive tests covering all functions and error scenarios
+   - All tests passing
+
+#### Files Created:
+- `src/core/output-processor.ts`
+- `src/core/__tests__/output-processor.test.ts`
