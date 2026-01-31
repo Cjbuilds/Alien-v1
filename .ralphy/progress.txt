@@ -1,0 +1,22 @@
+## Progress Log
+
+### 2026-01-31 - Agent 9: Build hourly update task
+
+**Task:** Create src/tasks/hourly-update.ts that runs every hour at :50
+
+**Completed:**
+- Created `src/tasks/hourly-update.ts` with `runHourlyUpdate(activityLog)` function
+- Function builds prompts using context (day, hour, runway, strategy, activity log)
+- Calls Claude API with retry logic (3 attempts, exponential backoff)
+- Saves content locally to `website/content/hourly/dayN_hourN.json`
+- Stores content in Supermemory with metadata
+- Updates landing page data at `website/content/landing.json`
+- Triggers deploy via webhook
+- Comprehensive logging throughout
+- Created tests for helper functions (getUrgencyLevel, substituteVariables, loadPromptTemplate, buildSystemPrompt, buildUserPrompt, countWords)
+- All tests pass (58 total across project)
+- Linting passes
+
+**Exports:**
+- `runHourlyUpdate(activityLog: string): Promise<HourlyUpdateResult>`
+- Helper functions exported for testability: `getUrgencyLevel`, `loadPromptTemplate`, `substituteVariables`, `buildSystemPrompt`, `buildUserPrompt`, `countWords`
