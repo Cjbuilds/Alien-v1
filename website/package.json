@@ -6,14 +6,21 @@
 		"dev": "astro dev",
 		"build": "astro build",
 		"preview": "astro preview",
+<<<<<<< HEAD
 		"astro": "astro",
 		"test": "bun test"
+=======
+		"astro": "astro"
+>>>>>>> ralphy/agent-15-1769883708533-i6h5sz-build-hourly-feed-page-create-website-feed-page-in
 	},
 	"dependencies": {
 		"@astrojs/node": "^9.5.2",
 		"astro": "^5.17.1"
+<<<<<<< HEAD
 	},
 	"devDependencies": {
 		"@happy-dom/global-registrator": "^17.4.4"
+=======
+>>>>>>> ralphy/agent-15-1769883708533-i6h5sz-build-hourly-feed-page-create-website-feed-page-in
 	}
 }
