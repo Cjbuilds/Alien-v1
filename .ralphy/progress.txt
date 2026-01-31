@@ -187,3 +187,31 @@ Created `src/core/output-processor.ts` - handles processing of Claude's response
 
 Tests: All tests passing (including 6 new goal-setting tests)
 Linting: Biome check passed with auto-fixes applied
+
+### Completed: Build Claude API client
+
+Created `src/core/claude-client.ts` with the following features:
+
+- Initializes Anthropic client with API key from config
+- Exports `generateContent(systemPrompt, userPrompt)` function
+- Uses `claude-sonnet-4-5-20250929` model with 8192 max tokens
+- Implements retry logic: 3 attempts with exponential backoff (1s, 2s, 4s)
+- Logs all API calls (start, success, failure, retry)
+- Handles rate limits gracefully (detects by error name, message, or 429 status)
+- Returns structured `GenerateContentResponse` with content and usage stats
+- Exports `ClaudeClientError` for error handling with rate limit detection
+- Created `src/core/index.ts` barrel export
+
+Tests added in `src/core/__tests__/claude-client.test.ts`:
+- Returns structured response on success
+- Calls API with correct parameters
+- Handles response with empty content
+- Retries on failure with exponential backoff
+- Throws ClaudeClientError after max retries
+- Identifies rate limit errors
+- Handles non-rate-limit errors correctly
+- ClaudeClientError stores cause and rate limit flag
+- ClaudeClientError defaults isRateLimitError to false
+
+All tests passing (41 total, 9 new for claude-client).
+Linting passes.
