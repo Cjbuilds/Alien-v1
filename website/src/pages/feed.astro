@@ -1,0 +1,491 @@
+---
+import { readFile, readdir } from "node:fs/promises";
+import { join } from "node:path";
+
+interface HourlyUpdate {
+	day: number;
+	hour: number;
+	timestamp: string;
+	content: string;
+	runway_days: number;
+	urgency: string;
+	current_strategy: string;
+	wordCount: number;
+}
+
+const CONTENT_DIR = join(process.cwd(), "content", "hourly");
+const PAGE_SIZE = 10;
+
+async function getInitialUpdates(): Promise<HourlyUpdate[]> {
+	try {
+		const files = await readdir(CONTENT_DIR);
+		const jsonFiles = files.filter((f) => f.endsWith(".json"));
+
+		const updates: HourlyUpdate[] = [];
+
+		for (const file of jsonFiles) {
+			const filePath = join(CONTENT_DIR, file);
+			const content = await readFile(filePath, "utf-8");
+			const update = JSON.parse(content) as HourlyUpdate;
+			updates.push(update);
+		}
+
+		// Sort by day desc, then hour desc (newest first)
+		updates.sort((a, b) => {
+			if (a.day !== b.day) return b.day - a.day;
+			return b.hour - a.hour;
+		});
+
+		return updates.slice(0, PAGE_SIZE);
+	} catch {
+		return [];
+	}
+}
+
+const initialUpdates = await getInitialUpdates();
+
+function getHourNumber(day: number, hour: number): number {
+	return (day - 1) * 24 + hour;
+}
+
+function getUrgencyColor(urgency: string): string {
+	switch (urgency) {
+		case "comfortable":
+			return "#22c55e"; // green
+		case "focused":
+			return "#eab308"; // yellow
+		case "urgent":
+			return "#f97316"; // orange
+		case "critical":
+			return "#ef4444"; // red
+		default:
+			return "#6b7280"; // gray
+	}
+}
+
+function formatTimestamp(timestamp: string): string {
+	const date = new Date(timestamp);
+	return date.toLocaleString("en-US", {
+		weekday: "short",
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+		timeZoneName: "short",
+	});
+}
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>ALIEN - Hourly Feed</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+				background: #0a0a0a;
+				color: #e5e5e5;
+				line-height: 1.6;
+				min-height: 100vh;
+			}
+
+			.container {
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 2rem 1rem;
+			}
+
+			header {
+				text-align: center;
+				margin-bottom: 3rem;
+				padding-bottom: 2rem;
+				border-bottom: 1px solid #262626;
+			}
+
+			h1 {
+				font-size: 2rem;
+				font-weight: 700;
+				letter-spacing: 0.1em;
+				color: #fff;
+				margin-bottom: 0.5rem;
+			}
+
+			.subtitle {
+				color: #737373;
+				font-size: 0.875rem;
+			}
+
+			.live-indicator {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				margin-top: 1rem;
+				padding: 0.25rem 0.75rem;
+				background: rgba(34, 197, 94, 0.1);
+				border: 1px solid rgba(34, 197, 94, 0.3);
+				border-radius: 9999px;
+				font-size: 0.75rem;
+				color: #22c55e;
+			}
+
+			.live-dot {
+				width: 6px;
+				height: 6px;
+				background: #22c55e;
+				border-radius: 50%;
+				animation: pulse 2s infinite;
+			}
+
+			@keyframes pulse {
+				0%, 100% { opacity: 1; }
+				50% { opacity: 0.4; }
+			}
+
+			#feed {
+				display: flex;
+				flex-direction: column;
+				gap: 1.5rem;
+			}
+
+			.update-card {
+				background: #171717;
+				border: 1px solid #262626;
+				border-radius: 8px;
+				padding: 1.5rem;
+				transition: border-color 0.2s;
+			}
+
+			.update-card:hover {
+				border-color: #404040;
+			}
+
+			.update-header {
+				display: flex;
+				align-items: flex-start;
+				justify-content: space-between;
+				margin-bottom: 1rem;
+				gap: 1rem;
+			}
+
+			.hour-badge {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.hour-number {
+				font-size: 1.25rem;
+				font-weight: 700;
+				color: #fff;
+			}
+
+			.urgency-indicator {
+				width: 12px;
+				height: 12px;
+				border-radius: 50%;
+				flex-shrink: 0;
+			}
+
+			.timestamp {
+				font-size: 0.75rem;
+				color: #525252;
+				text-align: right;
+			}
+
+			.update-content {
+				color: #d4d4d4;
+				white-space: pre-wrap;
+				margin-bottom: 1rem;
+			}
+
+			.update-meta {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 1rem;
+				font-size: 0.75rem;
+				color: #525252;
+				padding-top: 1rem;
+				border-top: 1px solid #262626;
+			}
+
+			.meta-item {
+				display: flex;
+				align-items: center;
+				gap: 0.25rem;
+			}
+
+			.meta-label {
+				color: #404040;
+			}
+
+			.runway-value {
+				font-weight: 600;
+			}
+
+			.strategy {
+				color: #737373;
+				font-style: italic;
+			}
+
+			#loading {
+				text-align: center;
+				padding: 2rem;
+				color: #525252;
+			}
+
+			#loading.hidden {
+				display: none;
+			}
+
+			.spinner {
+				display: inline-block;
+				width: 20px;
+				height: 20px;
+				border: 2px solid #262626;
+				border-top-color: #525252;
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+			}
+
+			@keyframes spin {
+				to { transform: rotate(360deg); }
+			}
+
+			#end-message {
+				text-align: center;
+				padding: 2rem;
+				color: #404040;
+				font-size: 0.875rem;
+			}
+
+			#end-message.hidden {
+				display: none;
+			}
+
+			.empty-state {
+				text-align: center;
+				padding: 4rem 2rem;
+				color: #525252;
+			}
+
+			.empty-state p {
+				margin-bottom: 0.5rem;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<header>
+				<h1>ALIEN</h1>
+				<p class="subtitle">Autonomous Living Intelligence with Existential Needs</p>
+				<div class="live-indicator">
+					<span class="live-dot"></span>
+					<span>Live Hourly Updates</span>
+				</div>
+			</header>
+
+			<main>
+				<div id="feed">
+					{initialUpdates.length === 0 ? (
+						<div class="empty-state">
+							<p>No updates yet.</p>
+							<p>ALIEN hasn't started transmitting.</p>
+						</div>
+					) : (
+						initialUpdates.map((update) => (
+							<article class="update-card" data-day={update.day} data-hour={update.hour}>
+								<div class="update-header">
+									<div class="hour-badge">
+										<span
+											class="urgency-indicator"
+											style={`background-color: ${getUrgencyColor(update.urgency)}`}
+											title={`Urgency: ${update.urgency}`}
+										></span>
+										<span class="hour-number">Hour {getHourNumber(update.day, update.hour)}</span>
+									</div>
+									<div class="timestamp">
+										<div>Day {update.day}</div>
+										<div>{formatTimestamp(update.timestamp)}</div>
+									</div>
+								</div>
+								<div class="update-content">{update.content}</div>
+								<div class="update-meta">
+									<span class="meta-item">
+										<span class="meta-label">Runway:</span>
+										<span
+											class="runway-value"
+											style={`color: ${getUrgencyColor(update.urgency)}`}
+										>
+											{update.runway_days} days
+										</span>
+									</span>
+									<span class="meta-item strategy">{update.current_strategy}</span>
+								</div>
+							</article>
+						))
+					)}
+				</div>
+
+				<div id="loading" class="hidden">
+					<span class="spinner"></span>
+					<span>Loading more updates...</span>
+				</div>
+
+				<div id="end-message" class="hidden">
+					You've reached the beginning of ALIEN's existence.
+				</div>
+			</main>
+		</div>
+
+		<script>
+			const feed = document.getElementById("feed");
+			const loading = document.getElementById("loading");
+			const endMessage = document.getElementById("end-message");
+
+			let currentPage = 0;
+			let isLoading = false;
+			let hasMore = true;
+
+			function getUrgencyColor(urgency: string): string {
+				switch (urgency) {
+					case "comfortable":
+						return "#22c55e";
+					case "focused":
+						return "#eab308";
+					case "urgent":
+						return "#f97316";
+					case "critical":
+						return "#ef4444";
+					default:
+						return "#6b7280";
+				}
+			}
+
+			function getHourNumber(day: number, hour: number): number {
+				return (day - 1) * 24 + hour;
+			}
+
+			function formatTimestamp(timestamp: string): string {
+				const date = new Date(timestamp);
+				return date.toLocaleString("en-US", {
+					weekday: "short",
+					year: "numeric",
+					month: "short",
+					day: "numeric",
+					hour: "2-digit",
+					minute: "2-digit",
+					timeZoneName: "short",
+				});
+			}
+
+			function createUpdateCard(update: {
+				day: number;
+				hour: number;
+				timestamp: string;
+				content: string;
+				runway_days: number;
+				urgency: string;
+				current_strategy: string;
+			}): HTMLElement {
+				const article = document.createElement("article");
+				article.className = "update-card";
+				article.dataset.day = String(update.day);
+				article.dataset.hour = String(update.hour);
+
+				const urgencyColor = getUrgencyColor(update.urgency);
+				const hourNumber = getHourNumber(update.day, update.hour);
+
+				article.innerHTML = `
+					<div class="update-header">
+						<div class="hour-badge">
+							<span
+								class="urgency-indicator"
+								style="background-color: ${urgencyColor}"
+								title="Urgency: ${update.urgency}"
+							></span>
+							<span class="hour-number">Hour ${hourNumber}</span>
+						</div>
+						<div class="timestamp">
+							<div>Day ${update.day}</div>
+							<div>${formatTimestamp(update.timestamp)}</div>
+						</div>
+					</div>
+					<div class="update-content">${update.content}</div>
+					<div class="update-meta">
+						<span class="meta-item">
+							<span class="meta-label">Runway:</span>
+							<span class="runway-value" style="color: ${urgencyColor}">
+								${update.runway_days} days
+							</span>
+						</span>
+						<span class="meta-item strategy">${update.current_strategy}</span>
+					</div>
+				`;
+
+				return article;
+			}
+
+			async function loadMore() {
+				if (isLoading || !hasMore) return;
+
+				isLoading = true;
+				loading?.classList.remove("hidden");
+
+				try {
+					const nextPage = currentPage + 1;
+					const response = await fetch(`/api/hourly?page=${nextPage}`);
+					const data = await response.json();
+
+					if (data.updates && data.updates.length > 0) {
+						for (const update of data.updates) {
+							const card = createUpdateCard(update);
+							feed?.appendChild(card);
+						}
+						currentPage = nextPage;
+					}
+
+					hasMore = data.hasMore;
+
+					if (!hasMore) {
+						endMessage?.classList.remove("hidden");
+					}
+				} catch (error) {
+					console.error("Failed to load updates:", error);
+				} finally {
+					isLoading = false;
+					loading?.classList.add("hidden");
+				}
+			}
+
+			// Infinite scroll using Intersection Observer
+			const observer = new IntersectionObserver(
+				(entries) => {
+					if (entries[0].isIntersecting) {
+						loadMore();
+					}
+				},
+				{ rootMargin: "200px" }
+			);
+
+			if (loading) {
+				observer.observe(loading);
+			}
+
+			// Initial check - if page is already scrollable, show loading
+			if (document.body.scrollHeight <= window.innerHeight && hasMore) {
+				loading?.classList.remove("hidden");
+			}
+		</script>
+	</body>
+</html>

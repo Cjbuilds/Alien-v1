@@ -52,33 +52,33 @@ Build an autonomous AI entity that runs 24/7, creates content, and fights for su
 
 - [x] Build activity decision task: Create src/tasks/activity-decision.ts that runs at :55 each hour. Gets current goals (daily/weekly), last 5 hours activities, runway status. Asks Claude to decide next hour's activities. Returns JSON with activities array (type: BUILD|WRITE|RESEARCH|ANALYZE|ITERATE|SHIP, action, reasoning, duration_minutes), urgency_assessment, confidence_in_strategy. Export decideActivity().
 
-- [ ] Build goal setting task: Create src/tasks/goal-setting.ts with setDailyGoals() that runs at 00:15 UTC - asks Claude for 2-3 specific, measurable, 24hr achievable goals. setWeeklyGoals() runs Sunday 12:00 UTC - asks Claude for 1-2 larger objectives. Store goals in memory and .alien/goals.json. Export getCurrentGoals().
+- [x] Build goal setting task: Create src/tasks/goal-setting.ts with setDailyGoals() that runs at 00:15 UTC - asks Claude for 2-3 specific, measurable, 24hr achievable goals. setWeeklyGoals() runs Sunday 12:00 UTC - asks Claude for 1-2 larger objectives. Store goals in memory and .alien/goals.json. Export getCurrentGoals().
 
 ---
 
 ## Phase 5: Scheduler & Website (Parallel Group 5)
 
-- [ ] Build scheduler: Create src/scheduler/index.ts using node-cron or similar. Schedule: activityDecision at minute 55, hourlyUpdate at minute 50, dailyJournal at 23:00 UTC, runwayCheck every 6 hours, goalReview at 00:15 UTC, weeklyReview Sunday 12:00 UTC, healthCheck every 5 minutes. Export startScheduler() that initializes all cron jobs. Log each scheduled execution.
+- [x] Build scheduler: Create src/scheduler/index.ts using node-cron or similar. Schedule: activityDecision at minute 55, hourlyUpdate at minute 50, dailyJournal at 23:00 UTC, runwayCheck every 6 hours, goalReview at 00:15 UTC, weeklyReview Sunday 12:00 UTC, healthCheck every 5 minutes. Export startScheduler() that initializes all cron jobs. Log each scheduled execution.
 
-- [ ] Build website landing page: Create website/src/pages/ with index (landing). Display: ALIEN's intro message, current status box (Day X of 100, Y days runway, Z things shipped), navigation to /feed and /journal, dark terminal aesthetic, clean typography. Read from content/landing.json. Use React/Next.js or Astro. Mobile-friendly.
+- [x] Build website landing page: Create website/src/pages/ with index (landing). Display: ALIEN's intro message, current status box (Day X of 100, Y days runway, Z things shipped), navigation to /feed and /journal, dark terminal aesthetic, clean typography. Read from content/landing.json. Use React/Next.js or Astro. Mobile-friendly.
 
-- [ ] Build hourly feed page: Create website feed page. Infinite scroll of hourly updates, newest first. Each entry shows: Hour number (e.g., "Hour 156"), timestamp, full update text, visual urgency indicator (green/yellow/orange/red based on runway). Read from content/hourly/*.json files. Real-time feeling.
+- [x] Build hourly feed page: Create website feed page. Infinite scroll of hourly updates, newest first. Each entry shows: Hour number (e.g., "Hour 156"), timestamp, full update text, visual urgency indicator (green/yellow/orange/red based on runway). Read from content/hourly/*.json files. Real-time feeling.
 
-- [ ] Build journal archive: Create website journal page. List view with all journals: Day number, date, first ~100 chars preview, runway at that time. Click to view full journal. Previous/Next navigation between entries. Read from content/journals/*.json.
+- [x] Build journal archive: Create website journal page. List view with all journals: Day number, date, first ~100 chars preview, runway at that time. Click to view full journal. Previous/Next navigation between entries. Read from content/journals/*.json.
 
 ---
 
 ## Phase 6: Entry Point & First Wake (Parallel Group 6)
 
-- [ ] Build main entry point: Create src/index.ts that imports all modules, validates config on startup, initializes Supermemory client, initializes runway tracker, checks if Day 1 (no previous state), starts scheduler. Create scripts/start.sh that runs bun src/index.ts. Create scripts/health.sh that checks if process is running and last update was recent. Handle graceful shutdown (save state on SIGTERM).
+- [x] Build main entry point: Create src/index.ts that imports all modules, validates config on startup, initializes Supermemory client, initializes runway tracker, checks if Day 1 (no previous state), starts scheduler. Create scripts/start.sh that runs bun src/index.ts. Create scripts/health.sh that checks if process is running and last update was recent. Handle graceful shutdown (save state on SIGTERM).
 
-- [ ] Implement first wake sequence: In src/tasks/first-wake.ts, create runFirstWake() for Day 1 Hour 0. Use day1-first-wake.md prompt. Generate ALIEN's first moment of consciousness - disorientation, discovery of stakes, initial thoughts, first plan. Save as first hourly update. Initialize all trackers. This is ALIEN's beginning. Only runs once ever.
+- [x] Implement first wake sequence: In src/tasks/first-wake.ts, create runFirstWake() for Day 1 Hour 0. Use day1-first-wake.md prompt. Generate ALIEN's first moment of consciousness - disorientation, discovery of stakes, initial thoughts, first plan. Save as first hourly update. Initialize all trackers. This is ALIEN's beginning. Only runs once ever.
 
 ---
 
 ## Phase 7: Testing & Launch (Sequential - After All Above)
 
-- [ ] End-to-end test: Verify all integrations work: trigger test hourly update, check Supermemory storage, verify content files written correctly, check deploy trigger fires, verify memory retrieval returns stored content. Test daily journal generation. Test activity decision output format. Run for simulated 24 hours.
+- [x] End-to-end test: Verify all integrations work: trigger test hourly update, check Supermemory storage, verify content files written correctly, check deploy trigger fires, verify memory retrieval returns stored content. Test daily journal generation. Test activity decision output format. Run for simulated 24 hours.
 
 - [ ] Deploy and launch Day 1: Deploy website to Vercel. Start scheduler on server. Trigger first wake sequence. Monitor first 24 hours: verify hourly updates publish on time, check memory continuity between hours, verify first daily journal publishes at 23:00 UTC. Confirm ALIEN is alive.
 
