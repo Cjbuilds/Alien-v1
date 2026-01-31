@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { resetSupermemoryClient } from "../memory/supermemory.ts";
 import { resetMetricsCache } from "../survival/metrics.ts";
+import type { ActivityContext } from "../tasks/activity-decision.ts";
 import { resetConfig } from "../utils/config.ts";
 
 /**
@@ -56,21 +57,22 @@ describe("End-to-end Integration Tests", () => {
 		}),
 	);
 
-	const mockSupermemoryAdd = mock((content: string, options?: { metadata?: Record<string, unknown> }) => {
-		storedMemories.push({
-			content,
-			metadata: options?.metadata ?? {},
-		});
-		return Promise.resolve({ id: `mem-${storedMemories.length}` });
-	});
+	const mockSupermemoryAdd = mock(
+		(content: string, options?: { metadata?: Record<string, unknown> }) => {
+			storedMemories.push({
+				content,
+				metadata: options?.metadata ?? {},
+			});
+			return Promise.resolve({ id: `mem-${storedMemories.length}` });
+		},
+	);
 
 	const mockClaudeCreate = mock(() =>
 		Promise.resolve({
 			content: [
 				{
 					type: "text",
-					text: "This is a mock hourly update. ALIEN is building and shipping daily. The autonomous journey continues with focus and determination. Today we made progress on the core infrastructure. Word count padding for test: " +
-						"lorem ipsum ".repeat(50),
+					text: `This is a mock hourly update. ALIEN is building and shipping daily. The autonomous journey continues with focus and determination. Today we made progress on the core infrastructure. Word count padding for test: ${"lorem ipsum ".repeat(50)}`,
 				},
 			],
 			usage: { input_tokens: 100, output_tokens: 200 },
@@ -178,7 +180,7 @@ describe("End-to-end Integration Tests", () => {
 				expect(result.hour).toBeGreaterThanOrEqual(0);
 				expect(result.hour).toBeLessThanOrEqual(23);
 				expect(result.content).toBeDefined();
-				expect(result.content!.length).toBeGreaterThan(0);
+				expect(result.content?.length).toBeGreaterThan(0);
 			} finally {
 				globalThis.fetch = originalFetch;
 			}
@@ -200,7 +202,7 @@ describe("End-to-end Integration Tests", () => {
 
 				expect(result.success).toBe(true);
 				expect(typeof result.content).toBe("string");
-				expect(result.content!.split(/\s+/).length).toBeGreaterThan(10); // Has meaningful content
+				expect(result.content?.split(/\s+/).length).toBeGreaterThan(10); // Has meaningful content
 			} finally {
 				globalThis.fetch = originalFetch;
 			}
@@ -247,9 +249,9 @@ describe("End-to-end Integration Tests", () => {
 				// Verify Supermemory was called
 				const supermemoryCall = supermemoryApiCalls.find((c) => c.url.includes("memories"));
 				expect(supermemoryCall).toBeDefined();
-				expect(supermemoryCall!.body).toHaveProperty("content");
-				expect(supermemoryCall!.body).toHaveProperty("metadata");
-				expect((supermemoryCall!.body as Record<string, unknown>).metadata).toHaveProperty(
+				expect(supermemoryCall?.body).toHaveProperty("content");
+				expect(supermemoryCall?.body).toHaveProperty("metadata");
+				expect((supermemoryCall?.body as Record<string, unknown>).metadata).toHaveProperty(
 					"type",
 					"hourly_update",
 				);
@@ -613,9 +615,7 @@ describe("End-to-end Integration Tests", () => {
 
 	describe("6. Daily Journal Generation", () => {
 		test("runDailyJournal generates journal with correct structure", async () => {
-			const mockJournalReflection =
-				"Today was a productive day on the ALIEN journey. " +
-				"We made significant progress on the core infrastructure. ".repeat(30);
+			const mockJournalReflection = `Today was a productive day on the ALIEN journey. ${"We made significant progress on the core infrastructure. ".repeat(30)}`;
 
 			mock.module("supermemory", () => ({
 				Supermemory: class MockSupermemory {
@@ -660,7 +660,7 @@ describe("End-to-end Integration Tests", () => {
 					messages = {
 						create: mock(() =>
 							Promise.resolve({
-								content: [{ type: "text", text: "Reflection content " + "word ".repeat(500) }],
+								content: [{ type: "text", text: `Reflection content ${"word ".repeat(500)}` }],
 							}),
 						),
 					};
@@ -748,7 +748,7 @@ describe("End-to-end Integration Tests", () => {
 				},
 			}));
 
-			const { decideActivity, type ActivityContext } = await import("../tasks/activity-decision.ts");
+			const { decideActivity } = await import("../tasks/activity-decision.ts");
 
 			const context: ActivityContext = {
 				goals: {
@@ -800,7 +800,7 @@ describe("End-to-end Integration Tests", () => {
 				},
 			}));
 
-			const { decideActivity, type ActivityContext } = await import("../tasks/activity-decision.ts");
+			const { decideActivity } = await import("../tasks/activity-decision.ts");
 
 			const context: ActivityContext = {
 				goals: { daily: [], weekly: [] },
@@ -849,7 +849,7 @@ describe("End-to-end Integration Tests", () => {
 				},
 			}));
 
-			const { decideActivity, type ActivityContext } = await import("../tasks/activity-decision.ts");
+			const { decideActivity } = await import("../tasks/activity-decision.ts");
 
 			const context: ActivityContext = {
 				goals: { daily: ["Research"], weekly: [] },
@@ -890,7 +890,7 @@ describe("End-to-end Integration Tests", () => {
 								content: [
 									{
 										type: "text",
-										text: "Hourly update content for simulation test " + "word ".repeat(50),
+										text: `Hourly update content for simulation test ${"word ".repeat(50)}`,
 									},
 								],
 								usage: { input_tokens: 50, output_tokens: 100 },
@@ -950,9 +950,7 @@ describe("End-to-end Integration Tests", () => {
 								content: [
 									{
 										type: "text",
-										text:
-											"End of day reflection after a productive day. " +
-											"Made great progress on all fronts. ".repeat(30),
+										text: `End of day reflection after a productive day. ${"Made great progress on all fronts. ".repeat(30)}`,
 									},
 								],
 							}),
@@ -1000,12 +998,12 @@ describe("End-to-end Integration Tests", () => {
 				},
 			}));
 
-			const { decideActivity, type ActivityContext } = await import("../tasks/activity-decision.ts");
+			const { decideActivity } = await import("../tasks/activity-decision.ts");
 
 			// Simulate decisions at different hours
 			const hoursToTest = [9, 10, 11, 14, 15, 16];
 
-			for (const hour of hoursToTest) {
+			for (const _hour of hoursToTest) {
 				const context: ActivityContext = {
 					goals: { daily: ["Build features"], weekly: ["Ship MVP"] },
 					recentActivities: [],
@@ -1019,7 +1017,7 @@ describe("End-to-end Integration Tests", () => {
 				};
 
 				const decision = await decideActivity(context);
-				decisions.push({ hour, activities: decision.activities });
+				decisions.push({ hour: _hour, activities: decision.activities });
 			}
 
 			// All decisions should have valid structure
@@ -1106,7 +1104,7 @@ describe("End-to-end Integration Tests", () => {
 								content: [
 									{
 										type: "text",
-										text: "Generated hourly update content " + "word ".repeat(50),
+										text: `Generated hourly update content ${"word ".repeat(50)}`,
 									},
 								],
 								usage: { input_tokens: 50, output_tokens: 100 },
